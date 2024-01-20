@@ -8,20 +8,15 @@ const Header = ({ setCity, city }) => {
   const [savedCitiesList, setSavedCityList] = useState([]);
 
   const saveCity = (value) => {
-    console.log(value);
     const storedData = JSON.parse(localStorage.getItem("savedCities")) || [];
-    console.log(storedData);
     if (!storedData || !storedData.includes(value)) {
       const updatedData = [...storedData, value];
       setSavedCityList((pre) => [...pre, { key: value, value: value }]);
       localStorage.setItem("savedCities", JSON.stringify(updatedData));
+      alert("City Added successfully");
     } else {
       alert("Data is already present in the array");
     }
-
-    // Update state and store the updated array in localStorage
-    setData(updatedData);
-    localStorage.setItem("savedCities", JSON.stringify(updatedData));
   };
 
   const onSuccess = (data) => {
@@ -36,11 +31,8 @@ const Header = ({ setCity, city }) => {
   };
   useEffect(() => {
     CityList(onSuccess, onFailue);
-
     const storedData = JSON.parse(localStorage.getItem("savedCities")) || [];
-
     setSavedCityList(storedData.map((item) => ({ key: item, value: item })));
-    // SavedCityList(savedCityFetched, onFailue);
   }, []);
   console.log(cityList);
   return (
@@ -58,9 +50,7 @@ const Header = ({ setCity, city }) => {
         ))}
         <Select
           onChange={saveCity}
-          showSearch={true}
           value="Add City +"
-          placeholder="Add City +"
           options={cityList}
         ></Select>
       </div>
