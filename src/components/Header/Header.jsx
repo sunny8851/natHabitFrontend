@@ -1,25 +1,27 @@
 import React, { useEffect, useState } from "react";
 import Button from "./Button";
 import { Dropdown, Select } from "antd";
-import { CityList, SaveCityName, SavedCityList } from "../../api/city";
+import { CityList } from "../../api/city";
 
 const Header = ({ setCity, city }) => {
   const [cityList, setCityList] = useState([]);
   const [savedCitiesList, setSavedCityList] = useState([]);
-  const onSaveCitySuccess = (data) => {
-    console.log(data);
-    if (data.data.success)
-      setSavedCityList((pre) => [
-        ...pre,
-        { key: data.data.name, value: data.data.name },
-      ]);
-    else onSaveCityFailed();
-  };
-  const onSaveCityFailed = () => {
-    alert("Save city failed. Check if it already exists");
-  };
+
   const saveCity = (value) => {
-    SaveCityName(onSaveCitySuccess, onSaveCityFailed, value);
+    console.log(value);
+    const storedData = JSON.parse(localStorage.getItem("savedCities")) || [];
+    console.log(storedData);
+    if (!storedData || !storedData.includes(value)) {
+      const updatedData = [...storedData, value];
+      setSavedCityList((pre) => [...pre, { key: value, value: value }]);
+      localStorage.setItem("savedCities", JSON.stringify(updatedData));
+    } else {
+      alert("Data is already present in the array");
+    }
+
+    // Update state and store the updated array in localStorage
+    setData(updatedData);
+    localStorage.setItem("savedCities", JSON.stringify(updatedData));
   };
 
   const onSuccess = (data) => {
@@ -29,21 +31,16 @@ const Header = ({ setCity, city }) => {
     });
   };
 
-  const savedCityFetched = (data) => {
-    setSavedCityList([]);
-    data.data.data.map((item) => {
-      setSavedCityList((pre) => [
-        ...pre,
-        { key: item.cityName, value: item.cityName },
-      ]);
-    });
-  };
   const onFailue = (data) => {
     console.log(data);
   };
   useEffect(() => {
     CityList(onSuccess, onFailue);
-    SavedCityList(savedCityFetched, onFailue);
+
+    const storedData = JSON.parse(localStorage.getItem("savedCities")) || [];
+
+    setSavedCityList(storedData.map((item) => ({ key: item, value: item })));
+    // SavedCityList(savedCityFetched, onFailue);
   }, []);
   console.log(cityList);
   return (
@@ -52,11 +49,11 @@ const Header = ({ setCity, city }) => {
         Weather Forecast
       </div>
       <div className="flex flex-wrap gap-5 items-center justify-evenly  mt-8">
-        {savedCitiesList.map((_city) => (
+        {savedCitiesList?.map((_city) => (
           <Button
             active={city === _city}
-            title={_city.value}
-            onClick={() => setCity(_city)}
+            title={_city.key}
+            onClick={() => setCity(_city.key)}
           />
         ))}
         <Select
