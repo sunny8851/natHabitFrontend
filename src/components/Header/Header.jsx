@@ -53,7 +53,7 @@ const Header = ({ setCity, city }) => {
           <Button
             active={city === _city}
             title={_city.key}
-            onClick={() => setCity(_city.key)}
+            onClick={() => setCity(_city)}
           />
         ))}
         <Select
